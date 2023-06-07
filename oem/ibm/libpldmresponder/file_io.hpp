@@ -301,8 +301,8 @@ class Handler : public CmdHandler
                                 .emplace_back(
                                     std::make_unique<pldm::requester::oem_ibm::
                                                          DbusToFileHandler>(
-                                        hostSockFd, hostEid, instanceIdDb,
-                                        path, handler))
+                                        hostSockFd, hostEid, instanceIdDb, path,
+                                        handler))
                                 ->newCsrFileAvailable(csr, fileHandle);
                             break;
                         }

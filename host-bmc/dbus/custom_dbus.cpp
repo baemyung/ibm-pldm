@@ -1,6 +1,10 @@
 #include "custom_dbus.hpp"
 
+#include <phosphor-logging/lg2.hpp>
+
 #include <filesystem>
+
+PHOSPHOR_LOG2_USING;
 
 namespace pldm
 {
@@ -364,6 +368,9 @@ const AssociationsObj CustomDBus::getAssociations(const std::string& path)
 
 void CustomDBus::implementCpuCoreInterface(const std::string& path)
 {
+    info("TEST: CustomDBus::implementCpuCoreInterface path: {PATH}", "PATH",
+         path.c_str());
+
     if (!cpuCore.contains(path))
     {
         cpuCore.emplace(path, std::make_unique<CPUCore>(
@@ -373,8 +380,16 @@ void CustomDBus::implementCpuCoreInterface(const std::string& path)
         std::filesystem::path corePath(path);
         std::string parentCpuPath = corePath.parent_path().string();
 
+        info(
+            "TEST: CustomDBus::implementCpuCoreInterface path: {PATH}, parentCpuPath={PARENT}",
+            "PATH", path.c_str(), "PARENT", parentCpuPath.c_str());
+
         if (!parentCpuPath.empty())
         {
+            info(
+                "TEST: CustomDBus::implementCpuCoreInterface path: {PATH}, parentCpuPath={PARENT} ==> Add Associations contained_by",
+                "PATH", path.c_str(), "PARENT", parentCpuPath.c_str());
+
             std::vector<std::tuple<std::string, std::string, std::string>>
                 associations{{"contained_by", "containing", parentCpuPath}};
             setAssociations(path, associations);
@@ -384,6 +399,9 @@ void CustomDBus::implementCpuCoreInterface(const std::string& path)
 
 void CustomDBus::setMicroCode(const std::string& path, uint32_t value)
 {
+    info("TEST: CustomDBus::setMicroCode path: {PATH}, Value:{VALUE}", "PATH",
+         path.c_str(), "VALUE", value);
+
     if (!cpuCore.contains(path))
     {
         cpuCore.emplace(path, std::make_unique<CPUCore>(

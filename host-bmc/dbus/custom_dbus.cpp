@@ -381,15 +381,25 @@ void CustomDBus::implementCpuCoreInterface(const std::string& path)
         std::string parentCpuPath = corePath.parent_path().string();
 
         info(
-            "TEST: CustomDBus::implementCpuCoreInterface path: {PATH}, parentCpuPath={PARENT}",
+            "TEST: CustomDBus::implementCpuCoreInterface CorePath: {PATH}, parentCpuPath={PARENT}}",
             "PATH", path.c_str(), "PARENT", parentCpuPath.c_str());
 
         if (!parentCpuPath.empty())
         {
-            info(
-                "TEST: CustomDBus::implementCpuCoreInterface path: {PATH}, parentCpuPath={PARENT} ==> Add Associations contained_by",
-                "PATH", path.c_str(), "PARENT", parentCpuPath.c_str());
+            // Skip "cpu1" or "core2"
+            sdbusplus::message::object_path objCpuPath(parentCpuPath);
+            sdbusplus::message::object_path objCorePath(corePath);
+            if (objCpuPath.filename() == "cpu1")
+            {
+                info(
+                    "TEST: CustomDBus::implementCpuCoreInterface CorePath: {PATH}, parentCpuPath={PARENT} ==> *SKIP* Associations contained_by (TESTING)",
+                    "PATH", path.c_str(), "PARENT", parentCpuPath.c_str());
+                return;
+            }
 
+            info(
+                "TEST: CustomDBus::implementCpuCoreInterface CorePath: {PATH}, parentCpuPath={PARENT} ==> *ADD* Associations contained_by",
+                "PATH", path.c_str(), "PARENT", parentCpuPath.c_str());
             std::vector<std::tuple<std::string, std::string, std::string>>
                 associations{{"contained_by", "containing", parentCpuPath}};
             setAssociations(path, associations);
